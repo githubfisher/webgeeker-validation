@@ -1711,15 +1711,12 @@ class Validation
                     }
                 }
             } catch (\Exception $e) {
-                $msg = $e->getMessage();
                 // 中文正则匹配问题，需要开启utf8模式，在正则表达式后面添加u。如: /^[\x{4e00}-\x{9fa5}]+$/u
-                // 兼容 PHP 8.4+: 警告文案从 "character value in \x{}" 变为 "character code point value in \x{}"，
-                // 因此只匹配两种文案共有的子串
-                if (false !== strpos($msg, '\x{} or \o{} is too large at offset') ||
-                    $msg === "eRrOrIsBlOcKeD")
-                    $result = @preg_match($regexp . 'u', $value);
-                else
-                    $result = null;
+                // 各 PHP 版本的编译失败警告文案不同（PHP 7.2 为 "character value in \x{}..."，7.3/7.4 为
+                // "range out of order in character class"，8.4+ 为 "character code point value in \x{}..."），
+                // 因此不再区分文案，编译失败一律追加 u 重试；若重试仍失败，会走下方 $result === false
+                // 分支提示"正则表达式验证失败, 请检查正则表达式是否合法"
+                $result = @preg_match($regexp . 'u', $value);
             }
             if ($result === 1)
                 return $value;
