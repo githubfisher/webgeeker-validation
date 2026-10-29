@@ -119,9 +119,11 @@ Validation::validate($params, $validations);
 
 ## 2 安装
 
+环境要求：PHP 5.6 ~ 8.5（已在 PHP 7.2 / 8.0 ~ 8.5 下通过全部单元测试），需要 mbstring 扩展。
+
 通过Composer安装
 ```
-composer require webgeeker/validation:^0.5.2
+composer require webgeeker/validation:^0.1.0
 ```
 
 ## 3 快速上手
