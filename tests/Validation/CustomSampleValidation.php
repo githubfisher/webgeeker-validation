@@ -70,7 +70,7 @@ class CustomSampleValidation extends CustomExampleValidation
     public static function validateCustomStrIn($value, $valueList, $reason, $alias)
     {
         if (is_array($valueList) === false || count($valueList) === 0)
-            throw new ValidationException("“${alias}”参数的验证模版(StrIn:)格式错误, 必须提供可取值的列表");
+            throw new ValidationException("“{$alias}”参数的验证模版(StrIn:)格式错误, 必须提供可取值的列表");
 
         if (is_string($value)) {
             if (in_array($value, $valueList, true))

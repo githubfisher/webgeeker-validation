@@ -954,7 +954,7 @@ class Validation
     public static function validateStrIn($value, $valueList, $reason = null, $alias = 'Parameter')
     {
         if (is_array($valueList) === false || count($valueList) === 0)
-            throw new ValidationException("“${alias}”参数的验证模版(StrIn:)格式错误, 必须提供可取值的列表");
+            throw new ValidationException("“{$alias}”参数的验证模版(StrIn:)格式错误, 必须提供可取值的列表");
 
         if (is_string($value)) {
             if (in_array($value, $valueList, true))
@@ -994,7 +994,7 @@ class Validation
     public static function validateStrNotIn($value, $valueList, $reason = null, $alias = 'Parameter')
     {
         if (is_array($valueList) === false || count($valueList) === 0)
-            throw new ValidationException("“${alias}”参数的验证模版(StrNotIn:)格式错误, 必须提供不可取的值的列表");
+            throw new ValidationException("“{$alias}”参数的验证模版(StrNotIn:)格式错误, 必须提供不可取的值的列表");
 
         if (is_string($value)) {
             if (!in_array($value, $valueList, true))
@@ -1097,7 +1097,7 @@ class Validation
     public static function validateStrInI($value, $valueList, $reason = null, $alias = 'Parameter')
     {
         if (is_array($valueList) === false || count($valueList) === 0)
-            throw new ValidationException("“${alias}”参数的验证模版(StrInI:)格式错误, 必须提供可取值的列表");
+            throw new ValidationException("“{$alias}”参数的验证模版(StrInI:)格式错误, 必须提供可取值的列表");
 
         if (is_string($value)) {
             $lowerValue = mb_strtolower($value);
@@ -1139,7 +1139,7 @@ class Validation
     public static function validateStrNotInI($value, $valueList, $reason = null, $alias = 'Parameter')
     {
         if (is_array($valueList) === false || count($valueList) === 0)
-            throw new ValidationException("“${alias}”参数的验证模版(StrNotInI:)格式错误, 必须提供不可取的值的列表");
+            throw new ValidationException("“{$alias}”参数的验证模版(StrNotInI:)格式错误, 必须提供不可取的值的列表");
 
         if (is_string($value)) {
             $lowerValue = mb_strtolower($value);
@@ -1245,7 +1245,7 @@ class Validation
     public static function validateStrLenGeLe($value, $min, $max, $reason = null, $alias = 'Parameter')
     {
         if ($min > $max)
-            throw new ValidationException("“${alias}”参数的验证模版StrLenGeLe格式错误, min不应该大于max");
+            throw new ValidationException("“{$alias}”参数的验证模版StrLenGeLe格式错误, min不应该大于max");
 
         if (is_string($value)) {
             $len = mb_strlen($value);
@@ -1342,7 +1342,7 @@ class Validation
     public static function validateByteLenGeLe($value, $min, $max, $reason = null, $alias = 'Parameter')
     {
         if ($min > $max)
-            throw new ValidationException("“${alias}”参数的验证模版ByteLenGeLe格式错误, min不应该大于max");
+            throw new ValidationException("“{$alias}”参数的验证模版ByteLenGeLe格式错误, min不应该大于max");
 
         if (is_string($value)) {
             $len = strlen($value);
@@ -1685,7 +1685,7 @@ class Validation
      * Perl正则表达式验证
      * @param $value string 参数值
      * @param $regexp string Perl正则表达式. 正则表达式内的特殊字符需要转义（包括/）. 首尾无需加/
-     * @param $reason null|string 原因（当不匹配时用于错误提示）. 如果为null, 当不匹配时会提示 “${alias}”不匹配正则表达式$regexp
+     * @param $reason null|string 原因（当不匹配时用于错误提示）. 如果为null, 当不匹配时会提示 “{$alias}”不匹配正则表达式$regexp
      * @param $alias string 参数别名, 用于错误提示
      * @return mixed
      * @throws ValidationException
@@ -1693,7 +1693,7 @@ class Validation
     public static function validateRegexp($value, $regexp, $reason = null, $alias = 'Parameter')
     {
         if (is_string($regexp) === false || $regexp === '')
-            throw new ValidationException("“${alias}”参数的验证模版(Regexp:)格式错误, 没有提供正则表达式");
+            throw new ValidationException("“{$alias}”参数的验证模版(Regexp:)格式错误, 没有提供正则表达式");
 
         if (is_string($value)) {
             try {
@@ -1713,7 +1713,9 @@ class Validation
             } catch (\Exception $e) {
                 $msg = $e->getMessage();
                 // 中文正则匹配问题，需要开启utf8模式，在正则表达式后面添加u。如: /^[\x{4e00}-\x{9fa5}]+$/u
-                if (false !== strpos($msg, 'preg_match(): Compilation failed: character value in \x{} or \o{} is too large at offset') ||
+                // 兼容 PHP 8.4+: 警告文案从 "character value in \x{}" 变为 "character code point value in \x{}"，
+                // 因此只匹配两种文案共有的子串
+                if (false !== strpos($msg, '\x{} or \o{} is too large at offset') ||
                     $msg === "eRrOrIsBlOcKeD")
                     $result = @preg_match($regexp . 'u', $value);
                 else
@@ -1722,7 +1724,7 @@ class Validation
             if ($result === 1)
                 return $value;
             else if ($result === false)
-                throw new ValidationException("“${alias}”参数的正则表达式验证失败, 请检查正则表达式是否合法");
+                throw new ValidationException("“{$alias}”参数的正则表达式验证失败, 请检查正则表达式是否合法");
             $isTypeError = false;
         } else
             $isTypeError = true;
@@ -1941,9 +1943,9 @@ class Validation
     private static function _throwFileUploadError($err, $isFilesArray, $alias, $fileIndex)
     {
         if ($isFilesArray)
-            throw new ValidationException("“${alias}[$fileIndex]”上传失败(ERR=$err)");
+            throw new ValidationException("“{$alias}[$fileIndex]”上传失败(ERR=$err)");
         else
-            throw new ValidationException("“${alias}”上传失败(ERR=$err)");
+            throw new ValidationException("“{$alias}”上传失败(ERR=$err)");
     }
 
     public static function validateFile($value, $reason = null, $alias = 'Parameter')
@@ -2005,7 +2007,7 @@ class Validation
                     if ($error === UPLOAD_ERR_OK) {
                         if (strpos($type, 'image/') !== 0) {
                             if ($isFilesArray)
-                                $alias = "${alias}[$i]";
+                                $alias = "{$alias}[$i]";
                             $hasError = true;
                             break;
                         }
@@ -2051,7 +2053,7 @@ class Validation
                     if ($error === UPLOAD_ERR_OK) {
                         if (strpos($type, 'video/') !== 0) {
                             if ($isFilesArray)
-                                $alias = "${alias}[$i]";
+                                $alias = "{$alias}[$i]";
                             $hasError = true;
                             break;
                         }
@@ -2097,7 +2099,7 @@ class Validation
                     if ($error === UPLOAD_ERR_OK) {
                         if (strpos($type, 'audio/') !== 0) {
                             if ($isFilesArray)
-                                $alias = "${alias}[$i]";
+                                $alias = "{$alias}[$i]";
                             $hasError = true;
                             break;
                         }
@@ -2163,7 +2165,7 @@ class Validation
 
                         if ($match === false) {
                             if ($isFilesArray)
-                                $alias = "${alias}[$i]";
+                                $alias = "{$alias}[$i]";
                             $hasError = true;
                             break;
                         }
@@ -2214,7 +2216,7 @@ class Validation
                         if ($size > $maxSize) // 超过上限
                         {
                             if ($isFilesArray)
-                                $alias = "${alias}[$i]";
+                                $alias = "{$alias}[$i]";
                             $hasError = true;
                             break;
                         }
@@ -2265,7 +2267,7 @@ class Validation
                         if ($size < $minSize) // 没到下限
                         {
                             if ($isFilesArray)
-                                $alias = "${alias}[$i]";
+                                $alias = "{$alias}[$i]";
                             $hasError = true;
                             break;
                         }
@@ -3295,7 +3297,7 @@ class Validation
                         $validatorName = $segment;
                         $methodName = 'validate' . $validatorName;
                         if (method_exists(static::class, $methodName) === false)
-                            throw new ValidationException("未知的验证器\"${validatorName}\"");
+                            throw new ValidationException("未知的验证器\"{$validatorName}\"");
 
                         if (strpos($validatorName, 'Custom') === 0) {
                             if (strlen($validatorName) == 6)
@@ -3305,9 +3307,9 @@ class Validation
                             $reflectParams = $method->getParameters();
                             $pCount = count($reflectParams) - 3;
                             if ($pCount < 0) {
-                                throw new ValidationException("自定义验证器\"${validatorName}\"的实现方法 $methodName() 应该至少有3个参数");
+                                throw new ValidationException("自定义验证器\"{$validatorName}\"的实现方法 $methodName() 应该至少有3个参数");
                             } else if ($pCount > 0) {
-                                throw new ValidationException("自定义验证器\"${validatorName}\"应该有 $pCount 个参数");
+                                throw new ValidationException("自定义验证器\"{$validatorName}\"应该有 $pCount 个参数");
                             }
                         }
 
@@ -3321,7 +3323,7 @@ class Validation
                             $p = '';
                     }
                     if (strlen($validatorName) === 0) {
-                        throw new ValidationException("“${segment}”中的':'号前面没有验证器");
+                        throw new ValidationException("“{$segment}”中的':'号前面没有验证器");
                     }
                     $validatorInfo = null;
                     switch ($validatorName) {
@@ -3540,19 +3542,19 @@ class Validation
                                 $reflectParams = $method->getParameters();
                                 $pCount = count($reflectParams) - 3;
                                 if ($pCount < 0) {
-                                    throw new ValidationException("自定义验证器\"${validatorName}\"的实现方法 $methodName() 应该至少有3个参数");
+                                    throw new ValidationException("自定义验证器\"{$validatorName}\"的实现方法 $methodName() 应该至少有3个参数");
                                 } else if ($pCount == 0) {
-                                    throw new ValidationException("自定义验证器\"${validatorName}\"应该没有参数");
+                                    throw new ValidationException("自定义验证器\"{$validatorName}\"应该没有参数");
                                 } else {
                                     $parserMethod = "parseParamsOf" . $validatorName;
                                     if (method_exists($className, $parserMethod)) { // 如果实现了参数解析方法
                                         $params = call_user_func_array([static::class, $parserMethod], [$p]);
                                         if (!is_array($params) || count($params) === 0 || $pCount != count($params))
-                                            throw new ValidationException("自定义验证器\"${validatorName}\"的参数解析方法 $parserMethod() 应该返回含有 $pCount 个参数的数组");
+                                            throw new ValidationException("自定义验证器\"{$validatorName}\"的参数解析方法 $parserMethod() 应该返回含有 $pCount 个参数的数组");
                                     } else {
                                         $params = explode(',', $p);
                                         if ($pCount != count($params))
-                                            throw new ValidationException("自定义验证器\"${validatorName}\"应该有 $pCount 个参数");
+                                            throw new ValidationException("自定义验证器\"{$validatorName}\"应该有 $pCount 个参数");
                                     }
                                     $validatorInfo = [$validatorName];
                                     for ($x = 0; $x < $pCount; $x++) {
@@ -3562,7 +3564,7 @@ class Validation
                                 }
                                 break;
                             }
-                            throw new ValidationException("未知的验证器\"${validatorName}\"");
+                            throw new ValidationException("未知的验证器\"{$validatorName}\"");
                     }
                     if ($validatorInfo)
                         $validators[] = $validatorInfo;
@@ -3585,8 +3587,8 @@ class Validation
     {
         $sampleFormat = @self::$sampleFormats[$validatorName];
         if ($sampleFormat === null)
-            throw new ValidationException("验证器${validatorName}格式错误");
-        throw new ValidationException("验证器${validatorName}格式错误, 正确的格式是: $sampleFormat");
+            throw new ValidationException("验证器{$validatorName}格式错误");
+        throw new ValidationException("验证器{$validatorName}格式错误, 正确的格式是: $sampleFormat");
     }
 
     private static function _isIntOrIntString($value)
@@ -3756,17 +3758,17 @@ class Validation
             if (($pos = strpos($mime, '/')) === false) // 没有斜杠'/'. 例: jpg 或 avi
             {
                 if ($mime === '*')
-                    throw new ValidationException("无效的MIME“${mime}”");
+                    throw new ValidationException("无效的MIME“{$mime}”");
                 $mime = "/$mime";
             } else // 有斜杠'/'. 例: image/jpeg 或 video/*
             {
                 $parts = explode('/', $mime);
                 if (count($parts) !== 2)
-                    throw new ValidationException("无效的MIME“${mime}”");
+                    throw new ValidationException("无效的MIME“{$mime}”");
                 $type = $parts[0];
                 $ext = $parts[1];
                 if (strlen($type) === 0 || strlen($ext) === 0 || $type === '*')
-                    throw new ValidationException("无效的MIME“${mime}”");
+                    throw new ValidationException("无效的MIME“{$mime}”");
 
                 // 将形如"video/*"的转化为"video/"以方便后续处理
                 if ($ext === '*')
@@ -3795,7 +3797,7 @@ class Validation
 
         $varName = $params[0];
         $value = $params[1];
-        self::validateInt($value, "“$validatorName:${paramstr}”中“${varName}”后面必须是整数，实际上却是“${value}”");
+        self::validateInt($value, "“$validatorName:{$paramstr}”中“{$varName}”后面必须是整数，实际上却是“{$value}”");
         return [$varName, intval($value)];
     }
 
@@ -3815,7 +3817,7 @@ class Validation
         $varName = $params[0];
 //        $value = $params[1];
         if (strlen($varName) == 0) // 简单检测
-            throw new ValidationException("“$validatorName:${paramstr}”中“${$validatorName}”后面必须是一个参数（变量）名，实际上却是空串");
+            throw new ValidationException("“$validatorName:{$paramstr}”中“{$$validatorName}”后面必须是一个参数（变量）名，实际上却是空串");
         return $params;
     }
 
@@ -3875,7 +3877,7 @@ class Validation
         $vals = [];
         for ($i = 1; $i < $c; $i++) {
             $intVal = $params[$i];
-            self::validateInt($intVal, "“$validatorName:${paramstr}”中“${varName}”后面必须全部是整数，实际上却包含了“${intVal}”");
+            self::validateInt($intVal, "“$validatorName:{$paramstr}”中“{$varName}”后面必须全部是整数，实际上却包含了“{$intVal}”");
             $vals[] = intval($intVal);
         }
         return [$varName, $vals];
@@ -3925,7 +3927,7 @@ class Validation
                     $ifName = $validatorInfo[0];
                     $method = 'validate' . ucfirst($ifName);
                     if (method_exists(self::class, $method) === false)
-                        throw new ValidationException("找不到条件判断${$ifName}的验证方法");
+                        throw new ValidationException("找不到条件判断{$$ifName}的验证方法");
 
                     $varkeypath = $validatorInfo[1]; // 条件参数的路径
 
@@ -3933,7 +3935,7 @@ class Validation
                     if (strpos($varkeypath, '.') === 0) // 以.开头, 是相对路径
                     {
                         $key = substr($varkeypath, 1); // 去掉开头的.号
-                        self::validateVarName($key, "IfXxx中的条件参数“${key}”不是合法的变量名");
+                        self::validateVarName($key, "IfXxx中的条件参数“{$key}”不是合法的变量名");
                         $ifParamValue = isset($siblings[$key]) ? $siblings[$key] : null;
                     } else // 绝对路径
                     {
@@ -3941,7 +3943,7 @@ class Validation
                         $asterisksCount = 0;
                         $keys = self::_compileKeypath($varkeypath, $asterisksCount);
                         if ($asterisksCount > 0) {
-                            throw new ValidationException("IfXxx中的条件参数“${varkeypath}”中不得包含*号");
+                            throw new ValidationException("IfXxx中的条件参数“{$varkeypath}”中不得包含*号");
                         }
 
                         $ifParamValue = self::getParamValueForIf($originParams, $keys);
@@ -3956,7 +3958,7 @@ class Validation
                             if ($ifParamValue === null && // 依赖的条件参数不存在
                                 $ifName !== 'IfExist' && $ifName !== 'IfNotExist'
                             ) {
-                                throw new ValidationException("必须提供条件参数“${varkeypath}”，因为“${alias}”的验证依赖它");
+                                throw new ValidationException("必须提供条件参数“{$varkeypath}”，因为“{$alias}”的验证依赖它");
                             }
                         } else { // 如果参数不存在，则该参数不检测
                             return $value;
@@ -3966,7 +3968,7 @@ class Validation
                         if ($ifParamValue === null && // 依赖的条件参数不存在
                             $ifName !== 'IfExist' && $ifName !== 'IfNotExist'
                         ) {
-                            throw new ValidationException("必须提供条件参数“${varkeypath}”，因为“${alias}”的验证依赖它");
+                            throw new ValidationException("必须提供条件参数“{$varkeypath}”，因为“{$alias}”的验证依赖它");
                         }
                     }
 
@@ -4051,7 +4053,7 @@ class Validation
             throw new ValidationException('参数$validations中包含空的参数名称');
 
         if (@preg_match('/^[a-zA-Z0-9_.\[\]*]+$/', $keypath) !== 1)
-            throw new ValidationException("非法的参数名称“${keypath}”");
+            throw new ValidationException("非法的参数名称“{$keypath}”");
 
         $keys = explode('.', $keypath); // 不可能返回空数组. $keys中的数组还没有解析
 
@@ -4061,38 +4063,38 @@ class Validation
         // 尝试识别普通数组, 形如'varname[*]'
         foreach ($keys as $key) {
             if (strlen($key) === 0)
-                throw new ValidationException("“${keypath}”中包含空的参数名称");
+                throw new ValidationException("“{$keypath}”中包含空的参数名称");
 
             $i = strpos($key, '[');
             if ($i === false) // 普通的key
             {
                 if (strpos($key, '*') !== false)
-                    throw new ValidationException("“${keypath}”中'*'号只能处于方括号[]中");
+                    throw new ValidationException("“{$keypath}”中'*'号只能处于方括号[]中");
                 if (strpos($key, ']') !== false)
-                    throw new ValidationException("“${key}”中包含了非法的']'号");
+                    throw new ValidationException("“{$key}”中包含了非法的']'号");
                 if (@preg_match('/^[0-9]/', $key) === 1) {
                     if (count($keys) === 1)
-                        throw new ValidationException("参数名称“${keypath}”不得以数字开头");
+                        throw new ValidationException("参数名称“{$keypath}”不得以数字开头");
                     else
-                        throw new ValidationException("“${keypath}”中包含了以数字开头的参数名称“${key}”");
+                        throw new ValidationException("“{$keypath}”中包含了以数字开头的参数名称“{$key}”");
                 }
                 $filteredKeys[] = $key;
                 continue;
             } else if ($i === 0) {
-                throw new ValidationException("“${keypath}”中'['号前面没有参数名称");
+                throw new ValidationException("“{$keypath}”中'['号前面没有参数名称");
             } else {
                 $j = strpos($key, ']');
                 if ($j === false)
-                    throw new ValidationException("“${key}”中的'['号之后缺少']'");
+                    throw new ValidationException("“{$key}”中的'['号之后缺少']'");
                 if ($i > $j)
-                    throw new ValidationException("“${key}”中'[', ']'顺序颠倒了");
+                    throw new ValidationException("“{$key}”中'[', ']'顺序颠倒了");
 
                 // 识别普通数组的变量名（'[*]'之前的部分）
                 $varName = substr($key, 0, $i);
                 if (strpos($varName, '*') !== false)
-                    throw new ValidationException("“${key}”中包含了非法的'*'号");
+                    throw new ValidationException("“{$key}”中包含了非法的'*'号");
                 if (@preg_match('/^[0-9]/', $varName) === 1)
-                    throw new ValidationException("“${keypath}”中包含了以数字开头的参数名称“${varName}”");
+                    throw new ValidationException("“{$keypath}”中包含了以数字开头的参数名称“{$varName}”");
                 $filteredKeys[] = $varName;
 
                 // 识别普通数组的索引值
@@ -4103,7 +4105,7 @@ class Validation
                 } else if (is_numeric($index))
                     $filteredKeys[] = intval($index);
                 else
-                    throw new ValidationException("“${key}”中的方括号[]之间只能包含'*'号或数字");
+                    throw new ValidationException("“{$key}”中的方括号[]之间只能包含'*'号或数字");
 
                 // 尝试识别多维数组
                 $len = strlen($key);
@@ -4111,10 +4113,10 @@ class Validation
                     $j++;
                     $i = strpos($key, '[', $j);
                     if ($i !== $j)
-                        throw new ValidationException("“${key}”中的“[$index]”之后包含非法字符");
+                        throw new ValidationException("“{$key}”中的“[$index]”之后包含非法字符");
                     $j = strpos($key, ']', $i);
                     if ($j === false)
-                        throw new ValidationException("“${key}”中的'['号之后缺少']'");
+                        throw new ValidationException("“{$key}”中的'['号之后缺少']'");
 
                     $index = substr($key, $i + 1, $j - $i - 1);
                     if ($index === '*') {
@@ -4123,7 +4125,7 @@ class Validation
                     } else if (is_numeric($index))
                         $filteredKeys[] = intval($index);
                     else
-                        throw new ValidationException("“${key}”中的方括号[]之间只能包含*号或数字");
+                        throw new ValidationException("“{$key}”中的方括号[]之间只能包含*号或数字");
                 }
             }
         }

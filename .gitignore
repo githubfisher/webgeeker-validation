@@ -72,3 +72,6 @@ test/e2e/reports
 selenium-debug.log
 
 # ============================== my project ==============================
+
+# ====== phpunit ======
+.phpunit.result.cache

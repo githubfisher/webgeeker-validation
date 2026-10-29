@@ -67,7 +67,7 @@ class ValidationTest extends TestCase
         } catch (Exception $e) {
             $errstr = $e->getMessage();
             if (strpos($errstr, $containedErroString) === false)
-                throw new Exception("Line $callLine: 这里抛出的异常中应该包含字符串“${containedErroString}”\n\t实际抛出的异常是“${errstr}”");
+                throw new Exception("Line $callLine: 这里抛出的异常中应该包含字符串“{$containedErroString}”\n\t实际抛出的异常是“{$errstr}”");
             return;
         }
         throw new Exception("Line $callLine: 这里应该抛出异常");
