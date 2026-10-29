@@ -125,7 +125,7 @@ Validation::validate($params, $validations);
 
 通过Composer安装
 ```
-composer require githubfisher/webgeeker-validation:^0.1.0
+composer require ghf/webgeeker-validation:^0.1.0
 ```
 
 ## 3 快速上手
