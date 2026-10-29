@@ -1,6 +1,6 @@
 {
-    "name": "webgeeker/validation",
-    "description": "Validation for WebGeeker",
+    "name": "githubfisher/webgeeker-validation",
+    "description": "Validation for WebGeeker (fork of photondragon/webgeeker-validation, PHP 8.4/8.5 support)",
     "license": "MIT",
     "authors": [
         {
